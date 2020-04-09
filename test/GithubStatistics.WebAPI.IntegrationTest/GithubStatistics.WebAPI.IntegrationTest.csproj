@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
+    <Import Project="..\..\CodeAnalysis.targets" />
+    
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
 
@@ -12,5 +13,4 @@
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
         <PackageReference Include="coverlet.collector" Version="1.0.1" />
     </ItemGroup>
-
 </Project>
