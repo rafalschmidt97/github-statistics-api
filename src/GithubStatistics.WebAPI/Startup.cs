@@ -1,3 +1,4 @@
+using GithubStatistics.Application;
 using GithubStatistics.Infrastructure;
 using GithubStatistics.WebAPI.Extensions;
 using Microsoft.AspNetCore.Builder;
@@ -20,6 +21,7 @@ namespace GithubStatistics.WebAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddInfrastructure();
+            services.AddApplication();
             services.AddControllers();
         }
 
