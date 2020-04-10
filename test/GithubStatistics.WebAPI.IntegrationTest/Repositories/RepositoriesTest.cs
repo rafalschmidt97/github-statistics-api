@@ -1,5 +1,8 @@
 using System.Net;
+using System.Text.Json;
 using System.Threading.Tasks;
+using GithubStatistics.Application.Repositories.Queries.GetStatistics;
+using GithubStatistics.WebAPI.Extensions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 
@@ -19,11 +22,26 @@ namespace GithubStatistics.WebAPI.IntegrationTest.Repositories
         {
             var client = _factory.CreateClient();
 
-            var response = await client.GetAsync("/repositories");
-            var body = await response.Content.ReadAsStringAsync();
+            var response = await client.GetAsync("/repositories/rafalschmidt97");
+            var bodyString = await response.Content.ReadAsStringAsync();
+            var body = JsonSerializer.Deserialize<RepositoriesStatistics>(bodyString);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.Equal("Hello World", body);
+            Assert.Equal("rafalschmidt97", body.Owner);
+            Assert.InRange(body.AvgStargazers, 0, 10);
+        }
+
+        [Fact]
+        public async Task GetRepositoriesThrowNotFound()
+        {
+            var client = _factory.CreateClient();
+
+            var response = await client.GetAsync("/repositories/fakerafalschmidt");
+            var bodyString = await response.Content.ReadAsStringAsync();
+            var body = JsonSerializer.Deserialize<ExceptionResponse>(bodyString);
+
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+            Assert.Equal("User 'fakerafalschmidt' not found", body.Message);
         }
     }
 }
