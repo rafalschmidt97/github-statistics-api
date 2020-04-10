@@ -32,6 +32,7 @@ namespace GithubStatistics.WebAPI
             }
 
             services.AddCustomExceptionHandler();
+            services.AddHealthChecks();
         }
 
         public void Configure(IApplicationBuilder app)
@@ -44,7 +45,11 @@ namespace GithubStatistics.WebAPI
             app.UseCustomExceptionHandler();
             app.UseRouting();
             app.UseAuthorization();
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapHealthChecks("/health");
+                endpoints.MapControllers();
+            });
         }
     }
 }
