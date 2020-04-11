@@ -3,7 +3,6 @@ using GithubStatistics.Infrastructure;
 using GithubStatistics.WebAPI.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -11,12 +10,10 @@ namespace GithubStatistics.WebAPI
 {
     public class Startup
     {
-        private readonly IConfiguration _configuration;
         private readonly IWebHostEnvironment _environment;
 
-        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
+        public Startup(IWebHostEnvironment environment)
         {
-            _configuration = configuration;
             _environment = environment;
         }
 
@@ -24,7 +21,6 @@ namespace GithubStatistics.WebAPI
         {
             services.AddInfrastructure();
             services.AddApplication();
-            services.AddControllers();
 
             if (_environment.IsDevelopment())
             {
@@ -33,6 +29,8 @@ namespace GithubStatistics.WebAPI
 
             services.AddCustomExceptionHandler();
             services.AddHealthChecks();
+
+            services.AddControllers().AddNewtonsoftJson();
         }
 
         public void Configure(IApplicationBuilder app)

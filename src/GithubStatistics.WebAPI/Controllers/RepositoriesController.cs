@@ -1,15 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Threading.Tasks;
+using GithubStatistics.Application.Repositories.Queries.GetStatistics;
+using Microsoft.AspNetCore.Mvc;
 
 namespace GithubStatistics.WebAPI.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class RepositoriesController : ControllerBase
+    public class RepositoriesController : ApiControllerBase
     {
-        [HttpGet]
-        public string Get()
+        [HttpGet("{owner}")]
+        public async Task<RepositoriesStatistics> Get(string owner)
         {
-            return "Hello World";
+            return await Mediator.Send(new GetStatisticsQuery(owner));
         }
     }
 }

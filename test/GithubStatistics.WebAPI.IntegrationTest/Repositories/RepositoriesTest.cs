@@ -1,9 +1,9 @@
 using System.Net;
-using System.Text.Json;
 using System.Threading.Tasks;
 using GithubStatistics.Application.Repositories.Queries.GetStatistics;
 using GithubStatistics.WebAPI.Extensions;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace GithubStatistics.WebAPI.IntegrationTest.Repositories
@@ -24,7 +24,7 @@ namespace GithubStatistics.WebAPI.IntegrationTest.Repositories
 
             var response = await client.GetAsync("/repositories/rafalschmidt97");
             var bodyString = await response.Content.ReadAsStringAsync();
-            var body = JsonSerializer.Deserialize<RepositoriesStatistics>(bodyString);
+            var body = JsonConvert.DeserializeObject<RepositoriesStatistics>(bodyString);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Equal("rafalschmidt97", body.Owner);
@@ -38,7 +38,7 @@ namespace GithubStatistics.WebAPI.IntegrationTest.Repositories
 
             var response = await client.GetAsync("/repositories/fakerafalschmidt");
             var bodyString = await response.Content.ReadAsStringAsync();
-            var body = JsonSerializer.Deserialize<ExceptionResponse>(bodyString);
+            var body = JsonConvert.DeserializeObject<ExceptionResponse>(bodyString);
 
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
             Assert.Equal("User 'fakerafalschmidt' not found", body.Message);

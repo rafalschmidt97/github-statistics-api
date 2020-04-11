@@ -135,7 +135,7 @@ $ dotnet restore
 
 ```bash
 # add secret for local development (useful to generate secret file as well)
-$ dotnet user-secrets set "GITHUB_ACCESS_TOKEN" "x" --project src/GithubStatistics.WebAPI
+$ dotnet user-secrets set "GITHUB_AUTH_TOKEN" "x" --project src/GithubStatistics.WebAPI
 
 # set environment as development (if necessary)
 set ASPNETCORE_ENVIRONMENT=Development // cmd
