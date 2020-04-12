@@ -47,7 +47,7 @@ namespace GithubStatistics.WebAPI.Extensions
         private Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             var status = HttpStatusCode.InternalServerError;
-            object message = nameof(HttpStatusCode.InternalServerError);
+            var message = nameof(HttpStatusCode.InternalServerError);
 
             if (exception is CustomException customException)
             {
@@ -62,8 +62,20 @@ namespace GithubStatistics.WebAPI.Extensions
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)status;
 
-            var result = JsonSerializer.Serialize(new { status, message });
+            var result = JsonSerializer.Serialize(new ExceptionResponse((int)status, message));
             return context.Response.WriteAsync(result);
         }
+    }
+
+    public class ExceptionResponse
+    {
+        public ExceptionResponse(int status, string message)
+        {
+            Status = status;
+            Message = message;
+        }
+
+        public int Status { get; }
+        public string Message { get; }
     }
 }
