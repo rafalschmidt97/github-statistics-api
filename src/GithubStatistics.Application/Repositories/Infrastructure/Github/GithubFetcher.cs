@@ -16,11 +16,13 @@ namespace GithubStatistics.Application.Repositories.Infrastructure.Github
     public class GithubFetcher
     {
         private readonly IConfiguration _configuration;
+        private readonly IHttpClientFactory _clientFactory;
         private readonly ILogger<GithubFetcher> _logger;
 
-        public GithubFetcher(IConfiguration configuration, ILogger<GithubFetcher> logger)
+        public GithubFetcher(IConfiguration configuration, IHttpClientFactory clientFactory, ILogger<GithubFetcher> logger)
         {
             _configuration = configuration;
+            _clientFactory = clientFactory;
             _logger = logger;
         }
 
@@ -106,7 +108,8 @@ namespace GithubStatistics.Application.Repositories.Infrastructure.Github
             GraphQLResponse<GithubResponse> response;
             try
             {
-                response = await PrepareGithubClient().SendQueryAsync<GithubResponse>(request);
+                var githubClient = PrepareGithubClient();
+                response = await githubClient.SendQueryAsync<GithubResponse>(request);
             }
             catch (GraphQLHttpException exception)
             {
@@ -124,7 +127,7 @@ namespace GithubStatistics.Application.Repositories.Infrastructure.Github
                 EndPoint = new Uri(_configuration["GITHUB_API_GRAPHQL_URL"]),
             };
 
-            var httpClient = new HttpClient();
+            var httpClient = _clientFactory.CreateClient();
             httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", _configuration["GITHUB_AUTH_TOKEN"]);
             httpClient.DefaultRequestHeaders.Add("User-Agent", "GithubStatistics");
