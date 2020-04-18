@@ -64,8 +64,7 @@ namespace GithubStatistics.Application.Repositories.Infrastructure.Github
             GithubUserRepositories repositories = null;
             string after = null;
 
-            // there is no other way to fetch all than multiple queries - the api support up to 100 records
-            // TODO: simplify/split methods for fetching as the file is quite long
+            // there is no other way to fetch all than multiple queries - the api supports up to 100 records
             while (true)
             {
                 request.Variables = new { owner, after };
@@ -84,7 +83,9 @@ namespace GithubStatistics.Application.Repositories.Infrastructure.Github
 
                 if (all)
                 {
-                    if (repositories.Nodes.Count == response.Data.User.Repositories.TotalCount)
+                    // in case of changing the amount of repositories (eg. user has removed one)
+                    // it will still finish the loop if locally there is more nodes than remotely
+                    if (repositories.Nodes.Count >= response.Data.User.Repositories.TotalCount)
                     {
                         break;
                     }
