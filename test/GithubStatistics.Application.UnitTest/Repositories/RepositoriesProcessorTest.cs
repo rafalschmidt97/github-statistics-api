@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using GithubStatistics.Application.Repositories.Infrastructure.Github;
 using GithubStatistics.Application.Repositories.Infrastructure.Statistics;
 using Xunit;
@@ -8,31 +9,42 @@ namespace GithubStatistics.Application.UnitTest.Repositories
     public class RepositoriesProcessorTest
     {
         [Fact]
-        public void ShouldReturnStatistics()
+        public void ShouldReturnFilledStatistics()
         {
-            var result = RepositoriesProcessor
-                .PrepareStatistics("owner", GetSampleRepositoryDetails());
+            var repositories = new List<RepositoryDetails>
+            {
+                new RepositoryDetails("ABC", 5, 10, 20, 1000),
+                new RepositoryDetails("a-c-e", 10, 20, 40, 2000),
+            };
+
+            var result = RepositoriesProcessor.PrepareStatistics("owner", repositories);
 
             Assert.Equal("owner", result.Owner);
-            Assert.Equal(3, result.Letters['v']);
-            Assert.Equal(1, result.Letters['a']);
+            Assert.Equal(2, result.Letters['a']);
+            Assert.Equal(2, result.Letters['c']);
+            Assert.Equal(1, result.Letters['e']);
             Assert.False(result.Letters.ContainsKey('z'));
             Assert.False(result.Letters.ContainsKey('A')); // case insensitive
             Assert.False(result.Letters.ContainsKey('-')); // only letters
-            Assert.Equal(10, result.AvgStargazers);
-            Assert.Equal(10, result.AvgWatchers);
-            Assert.Equal(10, result.AvgForks);
-            Assert.Equal(1000, result.AvgSize);
+            Assert.Equal(15, result.AvgStargazers);
+            Assert.Equal(30, result.AvgWatchers);
+            Assert.Equal(7.5, result.AvgForks);
+            Assert.Equal(1500, result.AvgSize);
         }
 
-        private static IList<RepositoryDetails> GetSampleRepositoryDetails()
+        [Fact]
+        public void ShouldReturnEmptyStatistics()
         {
-            return new List<RepositoryDetails>
-            {
-                new RepositoryDetails("skelvy-api", 5, 5, 5, 1000),
-                new RepositoryDetails("skelvy-client", 10, 10, 10, 1000),
-                new RepositoryDetails("skelvy-website", 15, 15, 15, 1000),
-            };
+            var repositories = new List<RepositoryDetails>();
+
+            var result = RepositoriesProcessor.PrepareStatistics("owner", repositories);
+
+            Assert.Equal("owner", result.Owner);
+            Assert.False(result.Letters.Any());
+            Assert.Equal(0, result.AvgStargazers);
+            Assert.Equal(0, result.AvgWatchers);
+            Assert.Equal(0, result.AvgForks);
+            Assert.Equal(0, result.AvgSize);
         }
     }
 }

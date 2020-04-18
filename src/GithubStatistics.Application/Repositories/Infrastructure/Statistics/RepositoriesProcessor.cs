@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using GithubStatistics.Application.Repositories.Infrastructure.Github;
 using GithubStatistics.Application.Repositories.Queries.GetStatistics;
@@ -9,6 +10,11 @@ namespace GithubStatistics.Application.Repositories.Infrastructure.Statistics
     {
         public static RepositoriesStatistics PrepareStatistics(string owner, IList<RepositoryDetails> repositories)
         {
+            if (!repositories.Any())
+            {
+                return new RepositoriesStatistics(owner, new Dictionary<char, int>(), 0, 0, 0, 0);
+            }
+
             var letters = new Dictionary<char, int>();
             float sumStargazers = 0,
                 sumWatchers = 0,
