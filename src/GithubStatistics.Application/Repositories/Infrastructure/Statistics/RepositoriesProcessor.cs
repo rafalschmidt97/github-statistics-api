@@ -12,7 +12,15 @@ namespace GithubStatistics.Application.Repositories.Infrastructure.Statistics
         {
             if (!repositories.Any())
             {
-                return new RepositoriesStatistics(owner, new Dictionary<char, int>(), 0, 0, 0, 0);
+                return new RepositoriesStatistics
+                {
+                    Owner = owner,
+                    Letters = new Dictionary<char, int>(),
+                    AvgStargazers = 0,
+                    AvgWatchers = 0,
+                    AvgForks = 0,
+                    AvgSize = 0,
+                };
             }
 
             var letters = new Dictionary<char, int>();
@@ -30,13 +38,15 @@ namespace GithubStatistics.Application.Repositories.Infrastructure.Statistics
                 sumSize += repository.DiskUsage;
             }
 
-            return new RepositoriesStatistics(
-                owner,
-                letters,
-                sumStargazers / repositories.Count,
-                sumWatchers / repositories.Count,
-                sumForks / repositories.Count,
-                sumSize / repositories.Count);
+            return new RepositoriesStatistics
+            {
+                Owner = owner,
+                Letters = letters,
+                AvgStargazers = sumStargazers / repositories.Count,
+                AvgWatchers = sumWatchers / repositories.Count,
+                AvgForks = sumForks / repositories.Count,
+                AvgSize = sumSize / repositories.Count,
+            };
         }
 
         private static void FillLetters(string repositoryName, IDictionary<char, int> letters)

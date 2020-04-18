@@ -1,5 +1,6 @@
 using System.Net;
 using System.Threading.Tasks;
+using FluentAssertions;
 using GithubStatistics.Application.Repositories.Queries.GetStatistics;
 using GithubStatistics.WebAPI.Extensions;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -26,9 +27,9 @@ namespace GithubStatistics.WebAPI.IntegrationTest.Repositories
             var bodyString = await response.Content.ReadAsStringAsync();
             var body = JsonConvert.DeserializeObject<RepositoriesStatistics>(bodyString);
 
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.Equal("rafalschmidt97", body.Owner);
-            Assert.InRange(body.AvgStargazers, 0, 10);
+            response.StatusCode.Should().BeEquivalentTo(HttpStatusCode.OK);
+            body.Owner.Should().BeEquivalentTo("rafalschmidt97");
+            body.AvgStargazers.Should().BeLessThan(10);
         }
 
         [Fact]
@@ -36,12 +37,12 @@ namespace GithubStatistics.WebAPI.IntegrationTest.Repositories
         {
             var client = _factory.CreateClient();
 
-            var response = await client.GetAsync("/repositories/fakerafalschmidt");
+            var response = await client.GetAsync("/repositories/rafalschmidt");
             var bodyString = await response.Content.ReadAsStringAsync();
             var body = JsonConvert.DeserializeObject<ExceptionResponse>(bodyString);
 
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-            Assert.Equal("User 'fakerafalschmidt' not found", body.Message);
+            HttpStatusCode.NotFound.Should().BeEquivalentTo(response.StatusCode);
+            body.Message.Should().BeEquivalentTo("User 'rafalschmidt' not found");
         }
     }
 }

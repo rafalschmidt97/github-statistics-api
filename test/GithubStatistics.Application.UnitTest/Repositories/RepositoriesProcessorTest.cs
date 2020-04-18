@@ -1,7 +1,8 @@
 using System.Collections.Generic;
-using System.Linq;
+using FluentAssertions;
 using GithubStatistics.Application.Repositories.Infrastructure.Github;
 using GithubStatistics.Application.Repositories.Infrastructure.Statistics;
+using GithubStatistics.Application.Repositories.Queries.GetStatistics;
 using Xunit;
 
 namespace GithubStatistics.Application.UnitTest.Repositories
@@ -13,23 +14,21 @@ namespace GithubStatistics.Application.UnitTest.Repositories
         {
             var repositories = new List<RepositoryDetails>
             {
-                new RepositoryDetails("ABC", 5, 10, 20, 1000),
-                new RepositoryDetails("a-c-e", 10, 20, 40, 2000),
+                new RepositoryDetails { Name = "ABC", StargazersCount = 5, WatchersCount = 10, ForkCount = 20, DiskUsage = 1000 },
+                new RepositoryDetails { Name = "a-c-e", StargazersCount = 10, WatchersCount = 20, ForkCount = 40, DiskUsage = 2000 },
             };
 
             var result = RepositoriesProcessor.PrepareStatistics("owner", repositories);
 
-            Assert.Equal("owner", result.Owner);
-            Assert.Equal(2, result.Letters['a']);
-            Assert.Equal(2, result.Letters['c']);
-            Assert.Equal(1, result.Letters['e']);
-            Assert.False(result.Letters.ContainsKey('z'));
-            Assert.False(result.Letters.ContainsKey('A')); // case insensitive
-            Assert.False(result.Letters.ContainsKey('-')); // only letters
-            Assert.Equal(15, result.AvgStargazers);
-            Assert.Equal(30, result.AvgWatchers);
-            Assert.Equal(7.5, result.AvgForks);
-            Assert.Equal(1500, result.AvgSize);
+            result.Should().BeEquivalentTo(new RepositoriesStatistics
+            {
+                Owner = "owner",
+                Letters = new Dictionary<char, int> { { 'a', 2 }, { 'b', 1 }, { 'c', 2 }, { 'e', 1 } },
+                AvgStargazers = 7.5f,
+                AvgWatchers = 15,
+                AvgForks = 30,
+                AvgSize = 1500,
+            });
         }
 
         [Fact]
@@ -39,12 +38,15 @@ namespace GithubStatistics.Application.UnitTest.Repositories
 
             var result = RepositoriesProcessor.PrepareStatistics("owner", repositories);
 
-            Assert.Equal("owner", result.Owner);
-            Assert.False(result.Letters.Any());
-            Assert.Equal(0, result.AvgStargazers);
-            Assert.Equal(0, result.AvgWatchers);
-            Assert.Equal(0, result.AvgForks);
-            Assert.Equal(0, result.AvgSize);
+            result.Should().BeEquivalentTo(new RepositoriesStatistics
+            {
+                Owner = "owner",
+                Letters = new Dictionary<char, int>(),
+                AvgStargazers = 0,
+                AvgWatchers = 0,
+                AvgForks = 0,
+                AvgSize = 0,
+            });
         }
     }
 }

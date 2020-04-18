@@ -4,27 +4,11 @@ namespace GithubStatistics.Application.Repositories.Queries.GetStatistics
 {
     public class RepositoriesStatistics
     {
-        public RepositoriesStatistics(
-            string owner,
-            Dictionary<char, int> letters,
-            float avgStargazers,
-            float avgWatchers,
-            float avgForks,
-            float avgSize)
-        {
-            Owner = owner;
-            Letters = letters;
-            AvgStargazers = avgStargazers;
-            AvgWatchers = avgWatchers;
-            AvgForks = avgForks;
-            AvgSize = avgSize;
-        }
-
-        public string Owner { get; }
-        public Dictionary<char, int> Letters { get; }
-        public float AvgStargazers { get; }
-        public float AvgWatchers { get; }
-        public float AvgForks { get; }
-        public float AvgSize { get; }
+        public string Owner { get; set; }
+        public Dictionary<char, int> Letters { get; set; }
+        public float AvgStargazers { get; set; }
+        public float AvgWatchers { get; set; }
+        public float AvgForks { get; set; }
+        public float AvgSize { get; set; }
     }
 }
